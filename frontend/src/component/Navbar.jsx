@@ -18,10 +18,10 @@ const Navbar = ({ currentPage = 'dashboard', onPageChange, onLogout }) => {
       description: 'All your transactions'
     },
     {
-      id: 'profile',
-      name: 'Profile',
+      id: 'data',
+      name: 'Data analysis',
       icon: '👤',
-      description: 'Account settings'
+      description: 'Data of your Expenses'
     }
   ];
 
