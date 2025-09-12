@@ -3,6 +3,7 @@ import Navbar from './component/Navbar';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import ExpenseTrackerAuth from './pages/ExpenseTrackerAuth';
+import FinancialAnalytics from "./pages/FinancialAnalytics";
 // import Profile later if needed
 // import Profile from './pages/Profile';
 
@@ -37,7 +38,7 @@ function App() {
 
       {currentPage === "dashboard" && <Dashboard />}
       {currentPage === "transactions" && <Transactions />}
-      {currentPage === "profile" && <Profile />}
+      {currentPage === "data" && <FinancialAnalytics />}
     </>
   );
 }
