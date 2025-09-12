@@ -2,6 +2,9 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import authRouter from './routes/auth.routes.js';
+import transactionRouter from './routes/transaction.routes.js';
+import budgetRouter from './routes/budget.routes.js';
+import reportRouter from './routes/report.routes.js';
 
 
 const app = express();
@@ -16,6 +19,8 @@ app.use(cors({
 
 
 app.use('/api/auth',authRouter);
-
+app.use('/api/transactions',transactionRouter);
+app.use('/api/budgets',budgetRouter);
+app.use('/api/reports',reportRouter);
 
 export default app;
