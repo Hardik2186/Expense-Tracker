@@ -213,7 +213,7 @@ const Transactions = () => {
   const handleEditFormChange = (field, value) =>
     setEditFormData((prev) => ({ ...prev, [field]: value }));
   const formatCurrency = (amount) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Math.abs(amount));
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(Math.abs(amount));
   const formatDate = (dateString) =>
     new Date(dateString).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   const getActiveFiltersCount = () => Object.values(filters).filter((v) => v !== "all" && v !== "").length;
