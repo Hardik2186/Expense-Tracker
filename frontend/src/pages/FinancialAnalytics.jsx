@@ -28,6 +28,10 @@ const FinancialAnalytics = () => {
     dispatch(fetchTransactions());
   }, [dispatch]);
 
+  // Format currency in INR
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(amount);
+
   // Filter transactions by selected period
   const filteredTransactions = useMemo(() => {
     const now = new Date();
@@ -57,7 +61,7 @@ const FinancialAnalytics = () => {
       .reduce((sum, t) => sum + t.amount, 0);
     const expenses = filteredTransactions
       .filter(t => t.type === 'expense')
-      .reduce((sum, t) => sum + Math.abs(t.amount), 0); // Make positive
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
     return {
       income,
@@ -67,7 +71,7 @@ const FinancialAnalytics = () => {
     };
   }, [filteredTransactions]);
 
-  // Category-wise expense data (positive values)
+  // Category-wise expense data
   const categoryData = useMemo(() => {
     const expenses = filteredTransactions.filter(t => t.type === 'expense');
     const categoryTotals = expenses.reduce((acc, t) => {
@@ -81,7 +85,7 @@ const FinancialAnalytics = () => {
     }));
   }, [filteredTransactions]);
 
-  // Payment mode distribution (expenses positive)
+  // Payment mode distribution
   const paymentModeData = useMemo(() => {
     const paymentTotals = filteredTransactions.reduce((acc, t) => {
       acc[t.mode] = (acc[t.mode] || 0) + Math.abs(t.amount);
@@ -94,7 +98,7 @@ const FinancialAnalytics = () => {
     }));
   }, [filteredTransactions]);
 
-  // Daily trend (expenses as positive values)
+  // Daily trend
   const dailyTrend = useMemo(() => {
     const last7Days = [];
     const today = new Date();
@@ -151,15 +155,15 @@ const FinancialAnalytics = () => {
       <div className="summary-cards">
         <div className="summary-card income-card">
           <h3>Total Income</h3>
-          <p className="amount">${totals.income.toFixed(2)}</p>
+          <p className="amount">{formatCurrency(totals.income)}</p>
         </div>
         <div className="summary-card expense-card">
           <h3>Total Expenses</h3>
-          <p className="amount">${totals.expenses.toFixed(2)}</p>
+          <p className="amount">{formatCurrency(totals.expenses)}</p>
         </div>
         <div className={`summary-card ${totals.balance >= 0 ? 'balance-positive' : 'balance-negative'}`}>
           <h3>Net Balance</h3>
-          <p className="amount">${totals.balance.toFixed(2)}</p>
+          <p className="amount">{formatCurrency(totals.balance)}</p>
         </div>
         <div className="summary-card savings-card">
           <h3>Savings Rate</h3>
@@ -178,7 +182,7 @@ const FinancialAnalytics = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="category" />
               <YAxis />
-              <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
+              <Tooltip formatter={(value) => [formatCurrency(value), 'Amount']} />
               <Bar dataKey="amount" fill="#8884d8" />
             </BarChart>
           </ResponsiveContainer>
@@ -203,7 +207,7 @@ const FinancialAnalytics = () => {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
+              <Tooltip formatter={(value) => [formatCurrency(value), 'Amount']} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -216,7 +220,7 @@ const FinancialAnalytics = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />
-              <Tooltip formatter={(value, name) => [`$${value}`, name === 'income' ? 'Income' : 'Expenses']} />
+              <Tooltip formatter={(value, name) => [formatCurrency(value), name === 'income' ? 'Income' : 'Expenses']} />
               <Legend />
               <Line type="monotone" dataKey="income" stroke="#4CAF50" strokeWidth={3} />
               <Line type="monotone" dataKey="expenses" stroke="#f44336" strokeWidth={3} />
@@ -240,7 +244,7 @@ const FinancialAnalytics = () => {
           </div>
           <div className="insight-item">
             <strong>Average Daily Expense:</strong><br />
-            <span>${(totals.expenses / 30).toFixed(2)}</span>
+            <span>{formatCurrency(totals.expenses / 30)}</span>
           </div>
           <div className="insight-item">
             <strong>Financial Health:</strong><br />

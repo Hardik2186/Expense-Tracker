@@ -42,9 +42,9 @@ const Dashboard = () => {
 
   // Static fallback data
   const staticTransactions = [
-    { id: 1, title: "Monthly Salary", amount: 5000, category: "Salary", mode: "Bank Transfer", payee: "ABC Company", type: "income", description: "Monthly salary for September", date: "2025-09-10" },
-    { id: 2, title: "Groceries Shopping", amount: -150, category: "Food", mode: "UPI", payee: "BigBasket", type: "expense", description: "Weekly grocery shopping", date: "2025-09-09" },
-    { id: 3, title: "Starbucks Coffee", amount: -25, category: "Food", mode: "Card", payee: "Starbucks", type: "expense", description: "Morning coffee", date: "2025-09-08" },
+    { id: 1, title: "Monthly Salary", amount: 50000, category: "Salary", mode: "Bank Transfer", payee: "ABC Company", type: "income", description: "Monthly salary for September", date: "2025-09-10" },
+    { id: 2, title: "Groceries Shopping", amount: -1500, category: "Food", mode: "UPI", payee: "BigBasket", type: "expense", description: "Weekly grocery shopping", date: "2025-09-09" },
+    { id: 3, title: "Starbucks Coffee", amount: -250, category: "Food", mode: "Card", payee: "Starbucks", type: "expense", description: "Morning coffee", date: "2025-09-08" },
   ];
 
   const transactions = backendTransactions.length ? backendTransactions : staticTransactions;
@@ -103,8 +103,12 @@ const Dashboard = () => {
     "Bank Transfer": transactions.filter(t => t.mode === "Bank Transfer").reduce((sum, t) => sum + Math.abs(t.amount), 0),
   };
 
-  const formatCurrency = (amount) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Math.abs(amount));
-  const formatDate = (dateString) => new Date(dateString).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  // ✅ Changed to Indian Rupee (₹)
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(Math.abs(amount));
+
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" });
 
   const categoryIcons = {
     Food: <Utensils size={18} />, Transport: <Car size={18} />, Entertainment: <Film size={18} />,
@@ -256,7 +260,8 @@ const Dashboard = () => {
                 <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="Transaction title" />
               </div>
               <div className="form-group">
-                <label>Amount ($)</label>
+                {/* ✅ Updated label */}
+                <label>Amount (₹)</label>
                 <input type="number" name="amount" value={formData.amount} onChange={handleInputChange} step="0.01" min="0" required />
               </div>
 
