@@ -1,21 +1,31 @@
 import { useState } from "react";
-import Navbar from './component/Navbar'
-import Dashboard from './pages/Dashboard'
-import Transactions from './pages/Transactions'
-// // You can add Profile page later if needed
-// import Profile from './pages/Profile'
+import Navbar from './component/Navbar';
+import Dashboard from './pages/Dashboard';
+import Transactions from './pages/Transactions';
+import ExpenseTrackerAuth from './pages/ExpenseTrackerAuth';
+// import Profile later if needed
+// import Profile from './pages/Profile';
 
 function App() {
   const [currentPage, setCurrentPage] = useState("dashboard");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handlePageChange = (pageId) => {
     setCurrentPage(pageId);
   };
 
   const handleLogout = () => {
+    setIsAuthenticated(false);
     alert("Logged out!");
-    // You can redirect or clear auth data here
   };
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  if (!isAuthenticated) {
+    return <ExpenseTrackerAuth onLogin={handleLogin} />;
+  }
 
   return (
     <>
