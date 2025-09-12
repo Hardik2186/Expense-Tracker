@@ -65,22 +65,14 @@ const Navbar = ({ currentPage = 'dashboard', onPageChange, onLogout }) => {
 
           {/* Right side - User info and Logout */}
           <div className="navbar-right">
-            <div className="user-info">
-              <div className="user-avatar">
-                <span>👤</span>
-              </div>
-              <div className="user-details">
-                <span className="user-name">John Doe</span>
-                <span className="user-role">User</span>
-              </div>
-            </div>
+            
             
             <button 
               className="logout-btn"
               onClick={handleLogout}
               aria-label="Logout"
             >
-              <span className="logout-icon">🚪</span>
+             
               <span className="logout-text">Logout</span>
             </button>
           </div>

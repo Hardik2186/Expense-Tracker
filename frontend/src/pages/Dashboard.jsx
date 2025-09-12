@@ -1,3 +1,5 @@
+
+import "../styles/Dashboard.css";
 import React, { useState } from "react";
 import {
   ShoppingBag,
@@ -8,6 +10,14 @@ import {
   Briefcase,
   Gift,
   DollarSign,
+  CreditCard,
+  Smartphone,
+  Building2,
+  Banknote,
+  PieChart,
+  TrendingUp,
+  Calendar,
+  Filter,
 } from "lucide-react";
 import "../styles/Dashboard.css";
 
@@ -15,48 +25,75 @@ const Dashboard = () => {
   const [transactions, setTransactions] = useState([
     {
       id: 1,
-      title: "Salary",
+      title: "Monthly Salary",
       amount: 5000,
       category: "Salary",
-      date: "2025-09-10",
+      mode: "Bank Transfer",
+      payee: "ABC Company",
       type: "income",
+      description: "Monthly salary for September",
+      date: "2025-09-10",
     },
     {
       id: 2,
-      title: "Groceries",
+      title: "Groceries Shopping",
       amount: -150,
       category: "Food",
-      date: "2025-09-09",
+      mode: "UPI",
+      payee: "BigBasket",
       type: "expense",
+      description: "Weekly grocery shopping",
+      date: "2025-09-09",
     },
     {
       id: 3,
-      title: "Coffee",
+      title: "Starbucks Coffee",
       amount: -25,
       category: "Food",
-      date: "2025-09-08",
+      mode: "Card",
+      payee: "Starbucks",
       type: "expense",
+      description: "Morning coffee",
+      date: "2025-09-08",
     },
     {
       id: 4,
-      title: "Freelance",
+      title: "Freelance Project",
       amount: 800,
       category: "Freelance",
-      date: "2025-09-07",
+      mode: "Online",
+      payee: "Client XYZ",
       type: "income",
+      description: "Website development project",
+      date: "2025-09-07",
+    },
+    {
+      id: 5,
+      title: "Uber Ride",
+      amount: -45,
+      category: "Transport",
+      mode: "Cash",
+      payee: "Uber Driver",
+      type: "expense",
+      description: "Ride to office",
+      date: "2025-09-06",
     },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filterMode, setFilterMode] = useState("all");
   const [formData, setFormData] = useState({
     title: "",
     amount: "",
     category: "",
-    date: new Date().toISOString().split("T")[0],
+    mode: "Cash",
+    payee: "",
     type: "expense",
+    description: "",
+    date: new Date().toISOString().split("T")[0],
   });
 
-  // Totals
+  // Calculate totals
   const totalIncome = transactions
     .filter((t) => t.type === "income")
     .reduce((sum, t) => sum + Math.abs(t.amount), 0);
@@ -66,6 +103,15 @@ const Dashboard = () => {
     .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
   const balance = totalIncome - totalExpense;
+
+  // Payment mode statistics
+  const paymentModeStats = {
+    Cash: transactions.filter(t => t.mode === "Cash").reduce((sum, t) => sum + Math.abs(t.amount), 0),
+    UPI: transactions.filter(t => t.mode === "UPI").reduce((sum, t) => sum + Math.abs(t.amount), 0),
+    Card: transactions.filter(t => t.mode === "Card").reduce((sum, t) => sum + Math.abs(t.amount), 0),
+    Online: transactions.filter(t => t.mode === "Online").reduce((sum, t) => sum + Math.abs(t.amount), 0),
+    "Bank Transfer": transactions.filter(t => t.mode === "Bank Transfer").reduce((sum, t) => sum + Math.abs(t.amount), 0),
+  };
 
   // Handlers
   const handleInputChange = (e) => {
@@ -78,18 +124,18 @@ const Dashboard = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.title || !formData.amount || !formData.category) return;
+    if (!formData.title || !formData.amount || !formData.category || !formData.payee) return;
 
     const newTransaction = {
       id: Date.now(),
       title: formData.title,
-      amount:
-        formData.type === "expense"
-          ? -Math.abs(parseFloat(formData.amount))
-          : Math.abs(parseFloat(formData.amount)),
+      amount: formData.type === "expense" ? -Math.abs(parseFloat(formData.amount)) : Math.abs(parseFloat(formData.amount)),
       category: formData.category,
-      date: formData.date,
+      mode: formData.mode,
+      payee: formData.payee,
       type: formData.type,
+      description: formData.description,
+      date: formData.date,
     };
 
     setTransactions((prev) => [newTransaction, ...prev]);
@@ -97,8 +143,11 @@ const Dashboard = () => {
       title: "",
       amount: "",
       category: "",
-      date: new Date().toISOString().split("T")[0],
+      mode: "Cash",
+      payee: "",
       type: "expense",
+      description: "",
+      date: new Date().toISOString().split("T")[0],
     });
     setIsModalOpen(false);
   };
@@ -127,81 +176,149 @@ const Dashboard = () => {
     Freelance: <Gift size={18} />,
     Investment: <DollarSign size={18} />,
     Gift: <Gift size={18} />,
+    Travel: <Car size={18} />,
     Other: <DollarSign size={18} />,
   };
+
+  const paymentModeIcons = {
+    Cash: <Banknote size={16} />,
+    UPI: <Smartphone size={16} />,
+    Card: <CreditCard size={16} />,
+    Online: <Smartphone size={16} />,
+    "Bank Transfer": <Building2 size={16} />,
+  };
+
+  // Filter transactions based on selected mode
+  const filteredTransactions = filterMode === "all" 
+    ? transactions 
+    : transactions.filter(t => t.mode === filterMode);
 
   return (
     <div className="dashboard">
       {/* Header */}
       <div className="dashboard-header">
-        <h1 className="dashboard-title">💰 My Expense Tracker</h1>
+        <div className="header-content">
+          <h1 className="dashboard-title">💰 My Expense Tracker</h1>
+          <p className="dashboard-subtitle">Track your expenses and manage your finances</p>
+        </div>
         <button className="add-btn" onClick={() => setIsModalOpen(true)}>
           + Add Transaction
         </button>
       </div>
 
-      {/* Summary */}
+      {/* Summary Cards */}
       <div className="summary-cards">
         <div className="summary-card income-card">
-          <div className="card-icon">💰</div>
+          <div className="card-icon">
+            <TrendingUp size={28} />
+          </div>
           <div className="card-content">
             <h3>Total Income</h3>
             <p className="amount">{formatCurrency(totalIncome)}</p>
           </div>
         </div>
         <div className="summary-card expense-card">
-          <div className="card-icon">💸</div>
+          <div className="card-icon">
+            <DollarSign size={28} />
+          </div>
           <div className="card-content">
             <h3>Total Expense</h3>
             <p className="amount">{formatCurrency(totalExpense)}</p>
+            
           </div>
         </div>
-        <div
-          className={`summary-card balance-card ${
-            balance >= 0 ? "positive" : "negative"
-          }`}
-        >
-          <div className="card-icon">⚖️</div>
+        <div className={`summary-card balance-card ${balance >= 0 ? "positive" : "negative"}`}>
+          <div className="card-icon">
+            <PieChart size={28} />
+          </div>
           <div className="card-content">
             <h3>Balance</h3>
             <p className="amount">{formatCurrency(balance)}</p>
+            <span className="card-trend">{balance >= 0 ? "Surplus" : "Deficit"}</span>
           </div>
         </div>
       </div>
 
-      {/* Transactions */}
+      {/* Payment Mode Statistics */}
+      <div className="payment-stats-section">
+        <h2>Payment Mode Statistics</h2>
+        <div className="payment-stats-grid">
+          {Object.entries(paymentModeStats).map(([mode, amount]) => (
+            <div key={mode} className="payment-stat-card">
+              <div className="payment-icon">
+                {paymentModeIcons[mode]}
+              </div>
+              <div className="payment-content">
+                <h4>{mode}</h4>
+                <p className="payment-amount">{formatCurrency(amount)}</p>
+                <span className="payment-count">
+                  {transactions.filter(t => t.mode === mode).length} transactions
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Transactions Section */}
       <div className="transactions-section">
-        <h2>Recent Transactions</h2>
+        <div className="transactions-header">
+          <h2>Recent Transactions</h2>
+          <div className="filter-controls">
+            <Filter size={18} />
+            <select 
+              value={filterMode} 
+              onChange={(e) => setFilterMode(e.target.value)}
+              className="filter-select"
+            >
+              <option value="all">All Payments</option>
+              <option value="Cash">Cash</option>
+              <option value="UPI">UPI</option>
+              <option value="Card">Card</option>
+              <option value="Online">Online</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+            </select>
+          </div>
+        </div>
+        
         <div className="transactions-list">
-          {transactions.length === 0 ? (
+          {filteredTransactions.length === 0 ? (
             <div className="empty-state">
-              <p>
-                🌱 You haven’t added anything yet.  
-                Let’s start tracking your money!
-              </p>
+              <p>🌱 No transactions found for the selected filter.</p>
             </div>
           ) : (
-            transactions.map((transaction) => (
-              <div
-                key={transaction.id}
-                className={`transaction-item ${transaction.type}`}
-              >
-                <div className="transaction-info">
-                  <h4 className="transaction-title">
-                    {categoryIcons[transaction.category]} {transaction.title}
-                  </h4>
-                  <p className="transaction-category">{transaction.category}</p>
+            filteredTransactions.map((transaction) => (
+              <div key={transaction.id} className={`transaction-item ${transaction.type}`}>
+                <div className="transaction-left">
+                  <div className="transaction-icon">
+                    {categoryIcons[transaction.category]}
+                  </div>
+                  <div className="transaction-info">
+                    <h4 className="transaction-title">{transaction.title}</h4>
+                    <p className="transaction-payee">
+                      {transaction.type === "expense" ? "Paid to" : "Received from"}: {transaction.payee}
+                    </p>
+                    <p className="transaction-category">{transaction.category}</p>
+                    {transaction.description && (
+                      <p className="transaction-description">{transaction.description}</p>
+                    )}
+                  </div>
                 </div>
-                <div className="transaction-details">
-                  <p
-                    className={`transaction-amount ${transaction.type}`}
-                  >
-                    {transaction.type === "expense" ? "-" : "+"}
-                    {formatCurrency(Math.abs(transaction.amount))}
-                  </p>
-                  <p className="transaction-date">
-                    {formatDate(transaction.date)}
-                  </p>
+                <div className="transaction-right">
+                  <div className="transaction-details">
+                    <p className={`transaction-amount ${transaction.type}`}>
+                      {transaction.type === "expense" ? "-" : "+"}
+                      {formatCurrency(Math.abs(transaction.amount))}
+                    </p>
+                    <div className="transaction-meta">
+                      <span className="transaction-mode">
+                        {paymentModeIcons[transaction.mode]} {transaction.mode}
+                      </span>
+                      <span className="transaction-date">
+                        <Calendar size={14} /> {formatDate(transaction.date)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))
@@ -211,28 +328,19 @@ const Dashboard = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div
-          className="modal-overlay"
-          onClick={() => setIsModalOpen(false)}
-        >
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Add New Transaction</h3>
-              <button
-                className="close-btn"
-                onClick={() => setIsModalOpen(false)}
-              >
+              <button className="close-btn" onClick={() => setIsModalOpen(false)}>
                 ×
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="transaction-form">
-              {/* Type */}
+              {/* Type Selection */}
               <div className="form-group">
-                <label>Type</label>
+                <label>Transaction Type</label>
                 <div className="radio-group">
                   <label className="radio-label">
                     <input
@@ -242,7 +350,7 @@ const Dashboard = () => {
                       checked={formData.type === "expense"}
                       onChange={handleInputChange}
                     />
-                    <span>Expense</span>
+                    <span className="radio-text expense">💸 Expense</span>
                   </label>
                   <label className="radio-label">
                     <input
@@ -252,27 +360,27 @@ const Dashboard = () => {
                       checked={formData.type === "income"}
                       onChange={handleInputChange}
                     />
-                    <span>Income</span>
+                    <span className="radio-text income">💰 Income</span>
                   </label>
                 </div>
               </div>
 
               {/* Title */}
               <div className="form-group">
-                <label>Title</label>
+                <label>Transaction Title</label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  placeholder="e.g., Lunch, Salary, Coffee"
+                  placeholder="e.g., Lunch at restaurant, Monthly salary"
                   required
                 />
               </div>
 
               {/* Amount */}
               <div className="form-group">
-                <label>Amount</label>
+                <label>Amount ($)</label>
                 <input
                   type="number"
                   name="amount"
@@ -285,36 +393,70 @@ const Dashboard = () => {
                 />
               </div>
 
-              {/* Category */}
+              {/* Category and Mode Row */}
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Category</label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select category</option>
+                    {formData.type === "expense" ? (
+                      <>
+                        <option value="Food">🍽️ Food</option>
+                        <option value="Transport">🚗 Transport</option>
+                        <option value="Entertainment">🎬 Entertainment</option>
+                        <option value="Shopping">🛍️ Shopping</option>
+                        <option value="Bills">💡 Bills</option>
+                        <option value="Healthcare">❤️ Healthcare</option>
+                        <option value="Travel">✈️ Travel</option>
+                        <option value="Other">📝 Other</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="Salary">💼 Salary</option>
+                        <option value="Freelance">🎨 Freelance</option>
+                        <option value="Investment">📈 Investment</option>
+                        <option value="Gift">🎁 Gift</option>
+                        <option value="Other">📝 Other</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Payment Mode</label>
+                  <select
+                    name="mode"
+                    value={formData.mode}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="Cash">💵 Cash</option>
+                    <option value="UPI">📱 UPI</option>
+                    <option value="Card">💳 Card</option>
+                    <option value="Online">🌐 Online</option>
+                    <option value="Bank Transfer">🏦 Bank Transfer</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Payee */}
               <div className="form-group">
-                <label>Category</label>
-                <select
-                  name="category"
-                  value={formData.category}
+                <label>
+                  {formData.type === "expense" ? "Paid To" : "Received From"}
+                </label>
+                <input
+                  type="text"
+                  name="payee"
+                  value={formData.payee}
                   onChange={handleInputChange}
+                  placeholder={formData.type === "expense" ? "e.g., Restaurant name, Store" : "e.g., Company name, Person"}
                   required
-                >
-                  <option value="">Select category</option>
-                  {formData.type === "expense" ? (
-                    <>
-                      <option value="Food">Food</option>
-                      <option value="Transport">Transport</option>
-                      <option value="Entertainment">Entertainment</option>
-                      <option value="Shopping">Shopping</option>
-                      <option value="Bills">Bills</option>
-                      <option value="Healthcare">Healthcare</option>
-                      <option value="Other">Other</option>
-                    </>
-                  ) : (
-                    <>
-                      <option value="Salary">Salary</option>
-                      <option value="Freelance">Freelance</option>
-                      <option value="Investment">Investment</option>
-                      <option value="Gift">Gift</option>
-                      <option value="Other">Other</option>
-                    </>
-                  )}
-                </select>
+                />
               </div>
 
               {/* Date */}
@@ -329,7 +471,19 @@ const Dashboard = () => {
                 />
               </div>
 
-              {/* Actions */}
+              {/* Description */}
+              <div className="form-group">
+                <label>Description (Optional)</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Add any notes or details about this transaction..."
+                  rows="3"
+                />
+              </div>
+
+              {/* Form Actions */}
               <div className="form-actions">
                 <button
                   type="button"
