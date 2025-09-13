@@ -42,9 +42,7 @@ const Dashboard = () => {
 
   // Static fallback data
   const staticTransactions = [
-    { id: 1, title: "Monthly Salary", amount: 50000, category: "Salary", mode: "Bank Transfer", payee: "ABC Company", type: "income", description: "Monthly salary for September", date: "2025-09-10" },
-    { id: 2, title: "Groceries Shopping", amount: -1500, category: "Food", mode: "UPI", payee: "BigBasket", type: "expense", description: "Weekly grocery shopping", date: "2025-09-09" },
-    { id: 3, title: "Starbucks Coffee", amount: -250, category: "Food", mode: "Card", payee: "Starbucks", type: "expense", description: "Morning coffee", date: "2025-09-08" },
+    
   ];
 
   const transactions = backendTransactions.length ? backendTransactions : staticTransactions;
